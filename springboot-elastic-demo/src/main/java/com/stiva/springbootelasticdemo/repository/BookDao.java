@@ -99,6 +99,7 @@ public class BookDao {
     public List<Book> getAll(String text) throws IOException{
 
         List<Book> bookList=new ArrayList<>();
+
         QueryBuilder query= QueryBuilders.boolQuery()
                 .should(QueryBuilders.queryStringQuery(text)
                         .lenient(true)
