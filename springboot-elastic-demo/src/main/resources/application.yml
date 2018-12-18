@@ -3,3 +3,6 @@ spring:
     elasticsearch:
       cluster-name: elasticsearch
       cluster-nodes: elasticsearch
+
+logging:
+  file: H:\MyProject\application.log

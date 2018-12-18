@@ -1,0 +1,51 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bookservice
+  annotations:
+    getambassador.io/config: |
+      ---
+      apiVersion: ambassador/v0
+      kind:  Mapping
+      name:  bookservice
+      prefix: /books
+      service: bookservice
+  labels:
+    run: bookservice
+spec:
+  selector:
+    run: bookservice
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    run: bookservice
+  name: bookservice
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: bookservice
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        run: bookservice
+    spec:
+      containers:
+      - name: bookservice
+        image: ajdevops/springboot-elastic-demo:0.0.7-SNAPSHOT
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 80

@@ -1,0 +1,48 @@
+.\minikube.exe start --kubernetes-version="v1.9.0" --vm-driver="virtualbox" --alsologtostderr --bootstrapper=kubeadm
+
+.\minikube.exe status
+
+.\kubectl.exe cluster-info
+
+.\minikube.exe ip
+
+.\kubectl.exe get pods --all-namespaces
+
+.\kubectl.exe get endpoints --all-namespaces
+
+.\kubectl.exe delete pod kubernetes-dashboard-77d8b98585-jfnl6 -n kube-system
+
+.\kubectl --all-namespaces=true describe po kubernetes-dashboard-77d8b98585-rffnm
+
+.\kubectl taint nodes --all node-role.kubernetes.io/master-
+
+.\minikube.exe dashboard --url=true
+
+.\kubectl.exe get nodes
+
+.\kubectl.exe get nodes
+
+.\kubectl.exe get services
+
+
+kubectl run book-service --image=ajdevops/springboot-elastic-demo:0.0.7-SNAPSHOT --port=8080
+
+kubectl set image deployments/book-service book-service=ajdevops/springboot-elastic-demo:0.0.4-SNAPSHOT
+
+kubectl rollout status deployments/book-service
+
+kubectl rollout undo deployments/book-service
+
+kubectl expose deployment/springboot-elastic-demo --type="NodePort" --port 8080
+
+
+kubectl run book-app --image=ajdevops/bookapp:v1 --port=80
+
+kubectl expose deployment/book-app --type="NodePort" --port 80
+
+minikube service --url=true book-service
+minikube service --url=true book-app
+docker build --rm -f book-app\Dockerfile -t book-app:v1 book-app
+
+kubectl scale deployment/book-app --replicas=4
+

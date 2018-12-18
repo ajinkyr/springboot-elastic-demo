@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: book-service1
+  labels:
+    app: book-service1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: book-service1
+  template:
+    metadata:
+      labels:
+        app: book-service1
+    spec:
+      containers:
+      - name: book-service1
+        image: ajdevops/springboot-elastic-demo:0.0.7-SNAPSHOT
+        imagePullPolicy: Always
+        ports:
+        - name: service
+          containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: book-service1
+  annotations:
+    getambassador.io/config: |
+      ---
+      apiVersion: ambassador/v0
+      kind:  Mapping
+      name:  book-service1
+      prefix: /books
+      rewrite: /books
+      service: book-service1
+  labels:
+    app: book-service1
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: book-service1
+  type: ClusterIP

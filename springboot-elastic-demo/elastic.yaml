@@ -1,0 +1,20 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: elastic-service
+spec:
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 9200
+---
+kind: Endpoints
+apiVersion: v1
+metadata:
+  name: elastic-service
+subsets:
+  - addresses:
+      - ip: 192.168.56.1
+    ports:
+      - port: 9200

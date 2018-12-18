@@ -66,6 +66,7 @@ public class BookDao {
             e.getLocalizedMessage();
         }
         Map<String,Object> sourceAsMap=getResponse.getSourceAsMap();
+        System.out.println("Map :"+sourceAsMap);
         return sourceAsMap;
     }
 
@@ -97,9 +98,23 @@ public class BookDao {
     }
 
     public List<Book> getAll(String text) throws IOException{
-
         List<Book> bookList=new ArrayList<>();
+        SearchHits hits = getSearchHits(text);
+        SearchHit[] searchHits=hits.getHits();
+        for(SearchHit hit:searchHits){
+            Book book=gson.fromJson(hit.getSourceAsString(),Book.class);
+            book.setId(hit.getId());
+            bookList.add(book);
+        }
+        return bookList;
+    }
 
+    public long getCount(String text) throws IOException {
+        SearchHits hits=getSearchHits(text);
+        return hits.totalHits;
+    }
+
+    private SearchHits getSearchHits(String text) throws IOException {
         QueryBuilder query= QueryBuilders.boolQuery()
                 .should(QueryBuilders.queryStringQuery(text)
                         .lenient(true)
@@ -116,7 +131,20 @@ public class BookDao {
 
         final SearchResponse response=restHighLevelClient.search(searchRequest);
 
-        SearchHits hits=response.getHits();
+        return response.getHits();
+    }
+
+    public List<Book> getAllRecords() throws IOException {
+        List<Book> bookList=new ArrayList<>();
+        QueryBuilder query= QueryBuilders.matchAllQuery();
+        SearchRequest searchRequest=new SearchRequest(INDEX);
+        searchRequest.types(TYPE);
+        SearchSourceBuilder searchSourceBuilder=new SearchSourceBuilder();
+        searchSourceBuilder.query(query);
+        searchRequest.source(searchSourceBuilder);
+
+        final  SearchResponse response=restHighLevelClient.search(searchRequest);
+        SearchHits hits = response.getHits();
         SearchHit[] searchHits=hits.getHits();
         for(SearchHit hit:searchHits){
             Book book=gson.fromJson(hit.getSourceAsString(),Book.class);
